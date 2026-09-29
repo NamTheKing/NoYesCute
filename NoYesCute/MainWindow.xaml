@@ -1,0 +1,116 @@
+<Window x:Class="NoYesCute.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="A very important question"
+        Width="750" Height="500"
+        MinWidth="500" MinHeight="350"
+        WindowStartupLocation="CenterScreen"
+        Background="#FFF0F5">
+
+    <Window.Resources>
+        <!-- Rounded, pink button used by both YES and NO -->
+        <Style x:Key="CuteButton" TargetType="Button">
+            <Setter Property="Width" Value="120" />
+            <Setter Property="Height" Value="50" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="25">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.85" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="QuestionText"
+                   Grid.Row="0"
+                   Margin="0,40,0,0"
+                   HorizontalAlignment="Center"
+                   FontSize="40" FontWeight="Bold"
+                   Foreground="#C2185B"
+                   Text="Will you marry me? ♥" />
+
+        <TextBlock x:Name="HintText"
+                   Grid.Row="1"
+                   Margin="0,10,0,0"
+                   HorizontalAlignment="Center"
+                   FontSize="18" FontStyle="Italic"
+                   Foreground="#AD1457"
+                   Text=" " />
+
+        <!-- Canvas = absolute positioning, so we can move the NO button anywhere
+             by animating Canvas.Left / Canvas.Top. -->
+        <Canvas x:Name="PlayArea"
+                Grid.Row="2"
+                ClipToBounds="True"
+                SizeChanged="PlayArea_SizeChanged">
+
+            <Button x:Name="YesButton"
+                    Style="{StaticResource CuteButton}"
+                    Background="#E91E63"
+                    Content="YES"
+                    RenderTransformOrigin="0.5,0.5"
+                    Click="YesButton_Click">
+                <Button.RenderTransform>
+                    <ScaleTransform x:Name="YesScale" ScaleX="1" ScaleY="1" />
+                </Button.RenderTransform>
+            </Button>
+
+            <!-- Focusable/IsTabStop = False: the keyboard (Tab + Enter/Space)
+                 cannot sneak a "NO" in either. -->
+            <Button x:Name="NoButton"
+                    Style="{StaticResource CuteButton}"
+                    Background="#9E9E9E"
+                    Content="NO"
+                    Focusable="False"
+                    IsTabStop="False"
+                    MouseEnter="NoButton_MouseEnter"
+                    PreviewMouseLeftButtonDown="NoButton_PreviewMouseLeftButtonDown"
+                    PreviewTouchDown="NoButton_PreviewTouchDown" />
+        </Canvas>
+
+        <!-- Shown after YES is clicked -->
+        <StackPanel x:Name="CelebrationPanel"
+                    Grid.Row="2"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Visibility="Collapsed"
+                    Opacity="0">
+            <TextBlock x:Name="BigHeart"
+                       HorizontalAlignment="Center"
+                       FontSize="120"
+                       Foreground="#E91E63"
+                       Text="♥"
+                       RenderTransformOrigin="0.5,0.5">
+                <TextBlock.RenderTransform>
+                    <ScaleTransform x:Name="HeartScale" ScaleX="1" ScaleY="1" />
+                </TextBlock.RenderTransform>
+            </TextBlock>
+            <TextBlock HorizontalAlignment="Center"
+                       FontSize="28" FontWeight="Bold"
+                       Foreground="#C2185B"
+                       Text="Yay! I love you so much!" />
+        </StackPanel>
+    </Grid>
+</Window>
