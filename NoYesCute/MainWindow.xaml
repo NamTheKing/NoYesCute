@@ -60,10 +60,14 @@
                    Text=" " />
 
         <!-- Canvas = absolute positioning, so we can move the NO button anywhere
-             by animating Canvas.Left / Canvas.Top. -->
+             by animating Canvas.Left / Canvas.Top.
+             Background="Transparent" is needed so the empty canvas area receives
+             MouseMove (a null background is not hit-testable). -->
         <Canvas x:Name="PlayArea"
                 Grid.Row="2"
                 ClipToBounds="True"
+                Background="Transparent"
+                MouseMove="PlayArea_MouseMove"
                 SizeChanged="PlayArea_SizeChanged">
 
             <Button x:Name="YesButton"

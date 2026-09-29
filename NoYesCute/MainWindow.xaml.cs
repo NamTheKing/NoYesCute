@@ -16,6 +16,14 @@ namespace NoYesCute
 
         private const double MaxYesScale = 1.8;
 
+        // NO starts running when the mouse gets this close (in pixels),
+        // i.e. before the mouse even touches it.
+        private const double DangerZone = 70;
+
+        // Escape animation speed: starts fast and gets faster on every dodge.
+        private const int StartMoveMilliseconds = 150;
+        private const int FastestMoveMilliseconds = 60;
+
         private static readonly string[] Taunts =
         {
             "Nope, try again!",
@@ -30,6 +38,10 @@ namespace NoYesCute
         private readonly Random _random = new();
         private bool _buttonsPlaced;
         private int _dodgeCount;
+
+        // Where NO is heading (or already is). Used for the "mouse is close" check,
+        // so it doesn't re-dodge again and again while it's still flying away.
+        private Point _noTarget;
 
         public MainWindow()
         {
@@ -51,6 +63,7 @@ namespace NoYesCute
                 // First time: put NO next to YES so it looks innocent.
                 Canvas.SetLeft(NoButton, centerX + 20);
                 Canvas.SetTop(NoButton, top);
+                _noTarget = new Point(centerX + 20, top);
                 _buttonsPlaced = true;
             }
             else if (IsNoButtonOutOfBounds())
@@ -69,6 +82,25 @@ namespace NoYesCute
         }
 
         // ---------- NO button: run away! ----------
+
+        private void PlayArea_MouseMove(object sender, MouseEventArgs e)
+        {
+            // Sense the mouse *approaching*: if it comes within DangerZone of NO,
+            // run before the user can get there.
+            Rect noRect = new(_noTarget.X, _noTarget.Y, NoButton.Width, NoButton.Height);
+            if (DistanceToRect(e.GetPosition(PlayArea), noRect) < DangerZone)
+                MoveNoButton();
+        }
+
+        /// <summary>
+        /// Shortest distance from a point to a rectangle (0 if the point is inside).
+        /// </summary>
+        private static double DistanceToRect(Point p, Rect r)
+        {
+            double dx = Math.Max(Math.Max(r.Left - p.X, 0), p.X - r.Right);
+            double dy = Math.Max(Math.Max(r.Top - p.Y, 0), p.Y - r.Bottom);
+            return Math.Sqrt(dx * dx + dy * dy);
+        }
 
         private void NoButton_MouseEnter(object sender, MouseEventArgs e)
         {
@@ -98,9 +130,13 @@ namespace NoYesCute
             double yesScale = Math.Min(1 + _dodgeCount * 0.1, MaxYesScale);
             AnimateYesScale(yesScale);
 
-            Point target = PickNewPosition(yesScale);
-            AnimateDouble(NoButton, Canvas.LeftProperty, target.X, 250, new QuadraticEase { EasingMode = EasingMode.EaseOut });
-            AnimateDouble(NoButton, Canvas.TopProperty, target.Y, 250, new QuadraticEase { EasingMode = EasingMode.EaseOut });
+            _noTarget = PickNewPosition(yesScale);
+
+            // 150 ms, 140 ms, 130 ms ... down to 60 ms: the more you chase it, the faster it runs.
+            int duration = Math.Max(FastestMoveMilliseconds, StartMoveMilliseconds - _dodgeCount * 10);
+            var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
+            AnimateDouble(NoButton, Canvas.LeftProperty, _noTarget.X, duration, ease);
+            AnimateDouble(NoButton, Canvas.TopProperty, _noTarget.Y, duration, ease);
 
             HintText.Text = Taunts[_random.Next(Taunts.Length)];
         }
