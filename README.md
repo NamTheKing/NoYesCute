@@ -23,6 +23,8 @@ Or open `NoYesCute/NoYesCute.csproj` in Visual Studio and press F5.
 | YES grows every time NO escapes | `DoubleAnimation` on a `ScaleTransform` with `BackEase` |
 | Celebration fades in | `DoubleAnimation` on `Opacity` |
 | Heart beats | `DoubleAnimation` with `AutoReverse` + `RepeatBehavior.Forever` |
+| Hearts float up in the background (a few while asking, lots after YES) | `DispatcherTimer` spawns hearts; `Canvas.Top` rises, `TranslateTransform.X` sways, `DoubleAnimationUsingKeyFrames` fades |
+| Hearts burst out of YES when clicked | `TranslateTransform` X/Y to a random point on a circle (`cos`/`sin`), plus scale pop and fade |
 
 ## How NO stays unclickable
 

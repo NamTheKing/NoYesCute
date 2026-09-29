@@ -46,6 +46,7 @@ namespace NoYesCute
         public MainWindow()
         {
             InitializeComponent();
+            StartFloatingHearts();
         }
 
         // ---------- Layout ----------
@@ -199,6 +200,14 @@ namespace NoYesCute
         {
             QuestionText.Text = "YES!!! Best day ever! ♥";
             HintText.Text = " ";
+
+            // Burst hearts out of the YES button (read its centre before hiding it),
+            // then switch the background hearts to "party mode".
+            Point yesCenter = YesButton.TranslatePoint(
+                new Point(YesButton.ActualWidth / 2, YesButton.ActualHeight / 2), HeartLayer);
+            HeartBurst(yesCenter, 40);
+            StartCelebrationHearts();
+
             PlayArea.Visibility = Visibility.Collapsed;
 
             // 1) Fade the celebration in.

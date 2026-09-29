@@ -43,6 +43,14 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <!-- Floating / bursting hearts are added here from code (MainWindow.Hearts.cs).
+             It is the first child, so it sits *behind* everything else, and
+             IsHitTestVisible="False" means hearts never block the mouse. -->
+        <Canvas x:Name="HeartLayer"
+                Grid.RowSpan="3"
+                ClipToBounds="True"
+                IsHitTestVisible="False" />
+
         <TextBlock x:Name="QuestionText"
                    Grid.Row="0"
                    Margin="0,40,0,0"
